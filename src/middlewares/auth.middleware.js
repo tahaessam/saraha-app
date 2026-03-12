@@ -1,5 +1,5 @@
-import { verifyToken } from "./token.utils.js";
-import { sendError } from "./response.handler.js";
+import { verifyToken } from "../utils/token.utils.js";
+import { sendError } from "../utils/response.handler.js";
 
 // ===================== AUTHENTICATION MIDDLEWARE =====================
 export const authenticate = (req, res, next) => {

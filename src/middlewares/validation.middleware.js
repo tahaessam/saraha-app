@@ -1,4 +1,4 @@
-import { sendError } from "../../common/response.handler.js";
+import { sendError } from "../utils/response.handler.js";
 
 // ===================== VALIDATION MIDDLEWARE =====================
 export const validateRequest = (schema) => {

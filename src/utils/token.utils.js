@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
-const JWT_EXPIRE = "7d";
+const JWT_SECRET = process.env.JWT_SECRET || "default-secret-key-change-in-production";
+const JWT_EXPIRE = process.env.JWT_EXPIRE || "1h";
 
 // ===================== GENERATE TOKEN =====================
 export const generateToken = (userId) => {
@@ -29,7 +29,7 @@ export const verifyToken = (token) => {
   }
 };
 
-// ===================== DECODE TOKEN (without verification) =====================
+// ===================== DECODE TOKEN =====================
 export const decodeToken = (token) => {
   try {
     const decoded = jwt.decode(token);

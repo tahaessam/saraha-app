@@ -1,5 +1,5 @@
 // Database service utilities for common operations
-import User from "../DB/models/user.model.js";
+import User from "../models/user.model.js";
 
 export const dbService = {
   // Find user by email

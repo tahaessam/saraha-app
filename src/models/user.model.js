@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userschema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     firstname: {
       type: String,
@@ -21,7 +21,6 @@ const userschema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
-      // lowercase: true
     },
     password: {
       type: String,
@@ -54,6 +53,18 @@ const userschema = new mongoose.Schema(
     strictQuery: true,
   }
 );
-const User = mongoose.models.User || mongoose.model("User", userschema);
+
+// Virtual property
+userSchema
+  .virtual("userName")
+  .get(function () {
+    return this.firstname + " " + this.lastname;
+  })
+  .set(function (v) {
+    const [firstName, lastName] = v.split(" ");
+    this.set({ firstname: firstName, lastname: lastName });
+  });
+
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User;

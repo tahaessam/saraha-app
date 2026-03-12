@@ -1,10 +1,9 @@
 import crypto from "crypto";
 import CryptoJS from "crypto-js";
 
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || "your-encryption-key-change-me";
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || "default-encryption-key-change-in-env";
 
-// ===================== SIMPLE SYMMETRIC ENCRYPTION (CryptoJS) =====================
-// Provides a very small API: encrypt(data) -> string, decrypt(string) -> data
+// ===================== SYMMETRIC ENCRYPTION =====================
 export const symmetricEncryption = {
   encrypt: (data, password = ENCRYPTION_KEY) => {
     try {
@@ -26,27 +25,27 @@ export const symmetricEncryption = {
   },
 };
 
-// Keep a small CryptoJS wrapper too (same behaviour)
-export const cryptoJsEncryption = {
-  encrypt: symmetricEncryption.encrypt,
-  decrypt: symmetricEncryption.decrypt,
-};
-
-// ===================== HASHING UTILITIES (SIMPLE) =====================
+// ===================== HASHING UTILITIES =====================
 export const hashingUtils = {
   sha256: (data) => {
     try {
-      return crypto.createHash("sha256").update(typeof data === "string" ? data : JSON.stringify(data)).digest("hex");
+      return crypto
+        .createHash("sha256")
+        .update(typeof data === "string" ? data : JSON.stringify(data))
+        .digest("hex");
     } catch (error) {
-      throw new Error(`SHA-256 hashing error: ${error.message}`);
+      throw new Error(`SHA-256 error: ${error.message}`);
     }
   },
 
   sha512: (data) => {
     try {
-      return crypto.createHash("sha512").update(typeof data === "string" ? data : JSON.stringify(data)).digest("hex");
+      return crypto
+        .createHash("sha512")
+        .update(typeof data === "string" ? data : JSON.stringify(data))
+        .digest("hex");
     } catch (error) {
-      throw new Error(`SHA-512 hashing error: ${error.message}`);
+      throw new Error(`SHA-512 error: ${error.message}`);
     }
   },
 
@@ -54,29 +53,35 @@ export const hashingUtils = {
     try {
       return crypto.randomBytes(32).toString("hex");
     } catch (error) {
-      throw new Error(`Random hash generation error: ${error.message}`);
+      throw new Error(`Random hash error: ${error.message}`);
     }
   },
 
   generateHMAC: (data, secret) => {
     try {
-      return crypto.createHmac("sha256", secret).update(typeof data === "string" ? data : JSON.stringify(data)).digest("hex");
+      return crypto
+        .createHmac("sha256", secret)
+        .update(typeof data === "string" ? data : JSON.stringify(data))
+        .digest("hex");
     } catch (error) {
-      throw new Error(`HMAC generation error: ${error.message}`);
+      throw new Error(`HMAC error: ${error.message}`);
     }
   },
 
   verifyHMAC: (data, secret, hash) => {
     try {
-      const generated = crypto.createHmac("sha256", secret).update(typeof data === "string" ? data : JSON.stringify(data)).digest("hex");
+      const generated = crypto
+        .createHmac("sha256", secret)
+        .update(typeof data === "string" ? data : JSON.stringify(data))
+        .digest("hex");
       return generated === hash;
     } catch (error) {
-      throw new Error(`HMAC verification error: ${error.message}`);
+      throw new Error(`HMAC verify error: ${error.message}`);
     }
   },
 };
 
-// ===================== ASYMMETRIC (KEEP ORIGINAL RSA HELPERS) =====================
+// ===================== ASYMMETRIC ENCRYPTION =====================
 export const asymmetricEncryption = {
   generateKeyPair: () => {
     try {
@@ -87,13 +92,19 @@ export const asymmetricEncryption = {
       });
       return { publicKey, privateKey };
     } catch (error) {
-      throw new Error(`Key pair generation error: ${error.message}`);
+      throw new Error(`Key generation error: ${error.message}`);
     }
   },
 
   encrypt: (publicKey, data) => {
     try {
-      const encrypted = crypto.publicEncrypt({ key: publicKey, padding: crypto.constants.RSA_PKCS1_OAEP_PADDING }, Buffer.from(JSON.stringify(data)));
+      const encrypted = crypto.publicEncrypt(
+        {
+          key: publicKey,
+          padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        },
+        Buffer.from(JSON.stringify(data))
+      );
       return encrypted.toString("base64");
     } catch (error) {
       throw new Error(`RSA encryption error: ${error.message}`);
@@ -102,7 +113,13 @@ export const asymmetricEncryption = {
 
   decrypt: (privateKey, encryptedData) => {
     try {
-      const decrypted = crypto.privateDecrypt({ key: privateKey, padding: crypto.constants.RSA_PKCS1_OAEP_PADDING }, Buffer.from(encryptedData, "base64"));
+      const decrypted = crypto.privateDecrypt(
+        {
+          key: privateKey,
+          padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        },
+        Buffer.from(encryptedData, "base64")
+      );
       return JSON.parse(decrypted.toString());
     } catch (error) {
       throw new Error(`RSA decryption error: ${error.message}`);
@@ -125,7 +142,7 @@ export const asymmetricEncryption = {
       verify.update(JSON.stringify(data));
       return verify.verify(publicKey, signature, "base64");
     } catch (error) {
-      throw new Error(`Signature verification error: ${error.message}`);
+      throw new Error(`Signature verify error: ${error.message}`);
     }
   },
 };
