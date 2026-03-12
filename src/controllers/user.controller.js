@@ -105,6 +105,11 @@ export const updateProfile = async (req, res, next) => {
     if (age) updateData.age = age;
     if (gender) updateData.gender = gender;
 
+    // handle avatar upload
+    if (req.file) {
+      updateData.profile_pic = req.file.path; // or relative path
+    }
+
     const user = await dbService.updateUser(userId, updateData);
     if (!user) {
       return sendError(res, 404, "User not found");
