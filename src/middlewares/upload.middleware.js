@@ -1,8 +1,36 @@
 import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Cloudinary storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "saraha-uploads", 
+    allowed_formats: ["jpg", "png", "gif", "jpeg"],
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (/image\/(jpeg|png|gif)/.test(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files are allowed"), false);
+  }
+};
+
+// ============ LOCAL STORAGE (COMMENTED OUT) ============
+/*
 import path from "path";
 import fs from "fs";
 
-// ensure uploads folder exists
 const uploadDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
@@ -17,14 +45,7 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}${ext}`);
   },
 });
-
-const fileFilter = (req, file, cb) => {
-  if (/image\/(jpeg|png|gif)/.test(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only image files are allowed"), false);
-  }
-};
+*/
 
 export const upload = multer({
   storage,
