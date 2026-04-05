@@ -1,8 +1,7 @@
-// Database service utilities for common operations
 import User from "../models/user.model.js";
-
+import RefreshToken from "../models/refreshToken.model.js";
+import TokenBlacklist from "../models/tokenBlacklist.model.js";
 export const dbService = {
-  // Find user by email
   findUserByEmail: async (email) => {
     try {
       const user = await User.findOne({ email });
@@ -11,8 +10,6 @@ export const dbService = {
       throw new Error(`Database error: ${error.message}`);
     }
   },
-
-  // Find user by ID
   findUserById: async (userId) => {
     try {
       const user = await User.findById(userId);
@@ -21,8 +18,6 @@ export const dbService = {
       throw new Error(`Database error: ${error.message}`);
     }
   },
-
-  // Create new user
   createUser: async (userData) => {
     try {
       const user = await User.create(userData);
@@ -31,8 +26,6 @@ export const dbService = {
       throw new Error(`Database error: ${error.message}`);
     }
   },
-
-  // Update user
   updateUser: async (userId, updateData) => {
     try {
       const user = await User.findByIdAndUpdate(userId, updateData, {
@@ -43,12 +36,50 @@ export const dbService = {
       throw new Error(`Database error: ${error.message}`);
     }
   },
-
-  // Delete user
   deleteUser: async (userId) => {
     try {
       await User.findByIdAndDelete(userId);
       return true;
+    } catch (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+  },
+  createRefreshToken: async (userId, token, expiresAt) => {
+    try {
+      const refreshToken = await RefreshToken.create({ userId, token, expiresAt });
+      return refreshToken;
+    } catch (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+  },
+  findRefreshToken: async (token) => {
+    try {
+      const refreshToken = await RefreshToken.findOne({ token });
+      return refreshToken;
+    } catch (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+  },
+  deleteRefreshToken: async (token) => {
+    try {
+      await RefreshToken.findOneAndDelete({ token });
+      return true;
+    } catch (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+  },
+  addToBlacklist: async (token, expiresAt) => {
+    try {
+      await TokenBlacklist.create({ token, expiresAt });
+      return true;
+    } catch (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+  },
+  isTokenBlacklisted: async (token) => {
+    try {
+      const blacklisted = await TokenBlacklist.findOne({ token });
+      return !!blacklisted;
     } catch (error) {
       throw new Error(`Database error: ${error.message}`);
     }

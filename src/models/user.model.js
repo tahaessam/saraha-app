@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const userSchema = new mongoose.Schema(
   {
     firstname: {
@@ -47,14 +46,35 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["system", "google"],
     },
+    failedLoginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    lockUntil: {
+      type: Date,
+    },
+    twoStepEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    twoStepOtp: {
+      type: String,
+    },
+    twoStepOtpExpiresAt: {
+      type: Date,
+    },
+    loginOtp: {
+      type: String,
+    },
+    loginOtpExpiresAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
     strictQuery: true,
   }
 );
-
-// Virtual property
 userSchema
   .virtual("userName")
   .get(function () {
@@ -64,7 +84,5 @@ userSchema
     const [firstName, lastName] = v.split(" ");
     this.set({ firstname: firstName, lastname: lastName });
   });
-
 const User = mongoose.models.User || mongoose.model("User", userSchema);
-
 export default User;

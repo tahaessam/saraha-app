@@ -1,4 +1,3 @@
-// Standard response handler for API
 export const sendResponse = (res, statusCode, message, data = null) => {
   return res.status(statusCode).json({
     success: statusCode < 400,
@@ -6,8 +5,6 @@ export const sendResponse = (res, statusCode, message, data = null) => {
     data,
   });
 };
-
-// Error response
 export const sendError = (res, statusCode, message, error = null) => {
   return res.status(statusCode).json({
     success: false,
